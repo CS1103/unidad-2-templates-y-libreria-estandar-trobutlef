@@ -173,41 +173,32 @@ T delete_duplicated(T container) {
 //http://www.cplusplus.com/articles/EhvU7k9E/
 
 
-template <typename... T>
-tuple<T&...> unpack(T&... args) noexcept{
+template <typename... Params>
+tuple<Params&...> unpack(Params&... args) noexcept{
   return {args...};
 }
 
 
 //#11
-//creamos una vector global
-list<vector<int>> temp;
-template<typename T>
-list<T> zip() {
-    list<T> ans;
-    T vec1;
-    for(int i=0;i < temp[0].size();i++){
-        for(int j=0;j < temp.size();j++)
-            vec1.push_back(temp[i][j]);
-        ans.push_back(vec1);
-        vec1.erase(vec1.begin(),vec1.end());
-    }
-    temp.erase(temp.begin(),temp.end());
-    return ans;
 
-}
 
-template<typename T, typename ...Params>
-list<T> zip(T l1, Params ...params) {
-    T vec1;
-    auto a = begin(l1);
-    for(int x=0;x<l1.size();x++){
-        vec1.push_back(*a);
-        a++;
+template <template <typename> typename T, template<typename...> typename... Params>
+T<vector<int>> zip (T<int> v, Params<int>... params) {
+  T<vector<int>> ans;
+  int sz = distance(v.begin(), v.end());
+  
+  for (int i = 0; i < sz; ++i) {
+    vector<int> temp;
+    
+    int element_v = *(next(v.begin(), i));//this will insert the apporopiate value of each vector dependending on the position, so that it can work as a transpose matrix 
+    temp.push_back(element_v);
+    for (auto v_i : {params...}) { //this will get each vector 
+      int element_each_vector = *(next(v_i.begin(), i));
+      temp.push_back(element_each_vector);
     }
-    temp.push_back(vec1);
-    vec1.erase(vec1.begin(),vec1.end());
-    return zip(params...);
+    ans.push_back(temp);
+  }
+  return ans;
 }
 
 #endif //POO2_UNIT2_WEEK_7_2020_2_EXERCISES_H
